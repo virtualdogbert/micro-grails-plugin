@@ -28,15 +28,15 @@ jar {
 
 def pomConfig = {
 
-               name 'gradle-console'
+               name 'micro-gails-plugin'
                packaging 'jar'
-               description 'Easily interact with your Groovy and Java applications'
-               url 'http://carlosgsouza.github.io/gradle-console/'
+               description 'This project brings some of the convention over configuration Grails has to Micronaut projects.'
+               url 'http://virtualdogbert.github.io/micro-grails-plugin/'
 
                scm {
-                   url 'scm:git@github.com:carlosgsouza/gradle-console.git'
-                   connection 'scm:git@github.com:carlosgsouza/gradle-console.git'
-                   developerConnection 'scm:git@github.com:carlosgsouza/gradle-console.git'
+                   url 'scm:git@github.com:virtualdogbert/micro-grails-plugin.git'
+                   connection 'scm:git@github.com:virtualdogbert/micro-grails-plugin.git'
+                   developerConnection 'scm:git@github.com:virtualdogbert/micro-grails-plugin.git'
                }
 
                licenses {
@@ -49,8 +49,8 @@ def pomConfig = {
 
                developers {
                    developer {
-                       id 'carlosgsouza'
-                       name 'Carlos Souza'
+                       id 'virtualdogbert'
+                       name 'Tucker Pelletier'
                    }
                }
 
@@ -90,7 +90,7 @@ bintray {
         version {
             vcsTag = project.version
             attributes = [
-                'gradle-plugin': 'carlosgsouza.console:net.carlosgsouza:gradle-console-plugin'
+                'gradle-plugin': 'com.virtualdogbert.micro.grails:com.virtualdogbert:micro-grails-plugin'
             ]
         }
     }

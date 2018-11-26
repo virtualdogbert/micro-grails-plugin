@@ -1,42 +1,35 @@
 plugins {
-  id 'nu.studer.plugindev' version '1.0.3'
-  id 'groovy'
-  id 'eclipse'
-  id 'maven'
+    id 'nu.studer.plugindev' version '1.0.3'
+    id 'groovy'
+    id 'eclipse'
+    id 'maven'
 }
 
-group = 'net.carlosgsouza'
-version = '1.1'
+group = 'com.virtualdogbert'
+version = '1.0.M1'
 
 configurations {
-  consolePlugin
+    consolePlugin
 }
 
 dependencies {
-  compile gradleApi()
-  compile "org.codehaus.groovy:groovy-all:2.3.9"
-
-	testCompile "org.spockframework:spock-core:1.0-groovy-2.3", {
-      // Gradle 2.3 tries to load Groovy 2.3.9 and Spock tries to load Groovy 2.3.10. Let's all use the same Groovy version!
-      exclude module:"groovy-all"
-  }
-	testCompile "cglib:cglib-nodep:2.2.2"
-	testCompile "org.objenesis:objenesis:1.2"
+    compile gradleApi()
+    //compile "org.codehaus.groovy:groovy-all:2.5.4"
 }
 
 plugindev {
-    pluginId = 'net.carlosgsouza.console'
-    pluginImplementationClass 'carlosgsouza.ConsolePlugin'
-    pluginDescription 'Easily interact with your Groovy and Java source code'
+    pluginId = 'micro.grails.plugin'
+    pluginImplementationClass 'com.virtualdogbert.MicroGrailsPlugin'
+    pluginDescription 'This project brings some of the convention over configuration Grails has to Micronaut projects.'
     pluginLicenses 'Apache-2.0'
-    pluginTags 'gradle', 'plugin', 'console'
-    authorId 'carlosgsouza'
-    authorName 'Carlos Souza'
-    authorEmail 'carlosgsouza@gmail.com'
-    projectUrl 'https://carlosgsouza.github.io/gradle-console/'
-    projectIssuesUrl 'https://github.com/carlosgsouza/gradle-console/issues'
-    projectVcsUrl 'https://github.com/carlosgsouza/gradle-console.git'
-    projectInceptionYear '2014'
+    pluginTags 'gradle', 'plugin', 'micronaut', 'grails', 'console'
+    authorId 'virtualdogbert'
+    authorName 'Tucker Pelletier'
+    authorEmail 'virtualdogbert@gmail.com'
+    projectUrl 'https://virtualdogbert.github.io/micro-grails-plugin/'
+    projectIssuesUrl 'https://github.com/virtualdogbert/micro-grails-plugin/issues'
+    projectVcsUrl 'https://github.com/virtualdogbert/micro-grails-plugin.git'
+    projectInceptionYear '2018'
     done() // do not omit this
 }
 
@@ -47,7 +40,7 @@ bintray {
 }
 
 eclipse.classpath {
-  downloadSources = true
+    downloadSources = true
 }
 
 
@@ -57,8 +50,4 @@ uploadArchives {
             repository(url: uri('repo'))
         }
     }
-}
-
-task wrapper(type:Wrapper) {
-    gradleVersion = "2.3"
 }

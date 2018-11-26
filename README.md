@@ -1,10 +1,13 @@
-gradle-console
+micro-grails
 ============
-This plugin for [Gradle](http://www.gradle.org/) allows you to easily interact with your Groovy and Java applications using the [Groovy Console](http://groovy.codehaus.org/Groovy+Console).
+This plugin for [Gradle](http://www.gradle.org/)  brings some of the convention over configuration Grails has to Micronaut projects. It also
+brings along the groovy console form the gradle-console plugin:
+
+https://plugins.gradle.org/plugin/net.carlosgsouza.console
 
 ![alt text](readme-files/groovy_console.png "Groovy Console")
 
-Just run <code>gradle console</code> and you will get a console window with all your runtime dependencies loaded for you. This is useful in case you need to interact your project dependencies or your source code in a fast and flexible way.
+
 
 
 
@@ -13,7 +16,7 @@ Add one of the following snippets to your build.gradle file according to the ver
 ### Gradle >= 2.1
 ```groovy
 plugins {
-	id "net.carlosgsouza.console" version "1.0.1"
+    id "micro.grails.plugin" version "1.0.M1"
 }
 ```
 
@@ -24,21 +27,31 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath group: 'net.carlosgsouza', name: 'gradle-console', version: '1.0.1'
+        classpath 'com.virtualdogbert:micro-grails-plugin:1.0.M1'
     }
 }
-apply plugin: 'console'
+apply plugin: "micro.grails.plugin"
 ```
+Where you put the apply can have an effect on if the plugin will work, I would put it after all the existing applys.
 
 ## Usage
+
+### Micro Grails
+see the [Micro Grails library](https://github.com/virtualdogbert/micro-grails/) 
+
+### console
 Invoke the <code>console</code> task using gradle
+You will get a console window with all your runtime dependencies loaded for you. This is useful in case you need to interact your project dependencies or your source code in a fast and flexible way.
 
 ```
 gradle console
 ```
 
 ## About this project
-This is still an young plugin and I am counting on your feedback to make it better! Don't hesitate to send me an e-mail, create an issue on GitHub or, even better, submit a pull request. 
-
+This is a side project of mine just to play around with adding similar conventions over configuration, like Grails to Micronaut, using my 
+Micro Grails library. This may be completely supplanted by the fact that Grails 4 will use Microanut for its main context. However because this
+is lighter weight, it may appeal to some, and also demonstrates how Grails works with simpler/more constrained code.
+ 
 ## Acknowledgement
-This plugin was created based on [this post](http://piraguaconsulting.blogspot.com.br/2012/02/gradle-groovy-console.html) by Mike Hugo. Thanks, Mike!
+This plugin was created based on [this plugin](https://plugins.gradle.org/plugin/net.carlosgsouza.console) by Carlos Souza. I wanted the Groovy
+console form my project, and the plugin was simple enough I could use it as a base to make my own.
