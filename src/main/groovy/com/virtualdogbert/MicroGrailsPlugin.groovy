@@ -33,18 +33,65 @@ class MicroGrailsPlugin implements Plugin<Project> {
         ConfigSlurper configSlurper = new ConfigSlurper()
         ConfigObject config = configSlurper.parse(new File(conventionsFile).toURL()).conventions
 
-        //Add source setts based on conventions file.
-        project.rootProject.sourceSets {
-            main {
-                groovy {
-                    srcDirs "$config.rootPath/$config.commandPath"
-                    srcDirs "$config.rootPath/$config.controllerPath"
-                    srcDirs "$config.rootPath/$config.domainPath"
-                    srcDirs "$config.rootPath/$config.servicePath"
+        project.rootProject.task('setupConventions') {
+            group = 'micro grails'
+
+            doLast {
+                String conventionsIn = loader.getResourceAsStream('conventions.groovy').text
+                File conventionsOut = new File("$project.projectDir/$conventionsFile")
+
+                if (!conventionsOut.exists()) {
+                    conventionsOut.append(conventionsIn)
                 }
+
+                ConfigSlurper configSlurper = new ConfigSlurper()
+                ConfigObject config = configSlurper.parse(conventionsIn).conventions
+
+                //TODO add command in M2
+                //File commandDirectory = new File("$config.rootPath/$config.commandPath")
+                File controllerDirectory = new File("$config.rootPath/$config.controllerPath")
+                File domainDirectory = new File("$config.rootPath/$config.domainPath")
+                File serviceDirectory = new File("$config.rootPath/$config.servicePath")
+
+//                //TODO add command in M2
+//                if (!commandDirectory.exists()) {
+//                    commandDirectory.mkdirs()
+//                }
+
+                if (!controllerDirectory.exists()) {
+                    controllerDirectory.mkdirs()
+                }
+
+                if (!domainDirectory.exists()) {
+                    domainDirectory.mkdirs()
+                }
+
+                if (!serviceDirectory.exists()) {
+                    serviceDirectory.mkdirs()
+                }
+
+
             }
         }
 
+        File conventions = new File(conventionsFile)
+
+        if (conventions.exists()) {
+            ConfigSlurper configSlurper = new ConfigSlurper()
+            ConfigObject config = configSlurper.parse(conventions.toURI().toURL()).conventions
+
+            //Add source setts based on conventions file.
+            project.rootProject.sourceSets {
+                main {
+                    groovy {
+                        //TODO add command in M2
+                        //srcDirs "$config.rootPath/$config.commandPath"
+                        srcDirs "$config.rootPath/$config.controllerPath"
+                        srcDirs "$config.rootPath/$config.domainPath"
+                        srcDirs "$config.rootPath/$config.servicePath"
+                    }
+                }
+            }
 
         //Adds Micro Grails library to the project
         project.dependencies {
