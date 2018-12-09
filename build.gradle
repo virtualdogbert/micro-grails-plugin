@@ -14,7 +14,6 @@ configurations {
 
 dependencies {
     compile gradleApi()
-    //compile "org.codehaus.groovy:groovy-all:2.5.4"
 }
 
 plugindev {
@@ -39,8 +38,9 @@ bintray {
     pkg.repo = 'maven'
 }
 
-eclipse.classpath {
-    downloadSources = true
+dependencies {
+    compile 'com.virtualdogbert:GroovyConfigWriter:1.0'
+    compile 'org.yaml:snakeyaml:1.18'
 }
 
 
