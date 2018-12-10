@@ -14,5 +14,5 @@ conventions = [
         transactional        : true,
         transactionalExcludes: [],
 
-        debug                : true
+        debug                : false
 ]

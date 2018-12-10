@@ -13,19 +13,17 @@ import org.yaml.snakeyaml.Yaml
 class MicroGrailsPlugin implements Plugin<Project> {
 
     static final  String      conventionsFile = "conventions.groovy"
-    private final ClassLoader loader          = getClass().getClassLoader();
+    private final ClassLoader loader          = getClass().getClassLoader()
 
     void apply(Project project) {
 
         //Adds Groovy console task from original plugin
-        project.rootProject.task('console', dependsOn: 'classes', type: JavaExec) {
+        project.task('console', dependsOn: 'classes', type: JavaExec) {
             group = 'micro grails'
 
             logger.debug("Opening Gradle Console")
 
             main = 'groovy.ui.Console'
-
-            project.apply plugin: "groovy"
 
             Configuration consoleRuntime = project.configurations.create("consoleRuntime")
             consoleRuntime.dependencies.add(project.dependencies.localGroovy())
@@ -34,7 +32,8 @@ class MicroGrailsPlugin implements Plugin<Project> {
             logger.debug("Gradle Console classpath=$classpath")
         }
 
-        project.rootProject.task('ymlToGroovyConfig') {
+        //Adds yml to groovy config task using map based config, which seems to work better with the dashersized names.
+        project.task('ymlToGroovyConfig') {
             group = 'micro grails'
 
             doLast {
@@ -71,9 +70,9 @@ class MicroGrailsPlugin implements Plugin<Project> {
                 GroovyConfigWriter configWriter
 
                 if (outputFile) {
-                    configWriter = new com.virtualdogbert.GroovyConfigWriter(outputFile, null, indent, quotedValues)
+                    configWriter = new com.virtualdogbert.GroovyConfigWriter(outputFile, null, indent, quotedValues, false)
                 } else {
-                    configWriter = new com.virtualdogbert.GroovyConfigWriter()
+                    configWriter = new com.virtualdogbert.GroovyConfigWriter(asClosure: false)
                 }
 
                 Yaml yaml = new Yaml()
@@ -87,7 +86,9 @@ class MicroGrailsPlugin implements Plugin<Project> {
         }
 
 
-        project.rootProject.task('setupConventions') {
+        //Adds a task to setup the Micro Grails conventions, coping over the default conventions.groovy and setting up the directories
+        //with packages
+        project.task('setupConventions') {
             group = 'micro grails'
 
             doLast {
@@ -103,9 +104,9 @@ class MicroGrailsPlugin implements Plugin<Project> {
 
                 //TODO add command in M2
                 //File commandDirectory = new File("$config.rootPath/$config.commandPath")
-                File controllerDirectory = new File("$config.rootPath/$config.controllerPath")
-                File domainDirectory = new File("$config.rootPath/$config.domainPath")
-                File serviceDirectory = new File("$config.rootPath/$config.servicePath")
+                File controllerDirectory = new File("$config.rootPath/$config.controllerPath/$project.group")
+                File domainDirectory = new File("$config.rootPath/$config.domainPath/$project.group")
+                File serviceDirectory = new File("$config.rootPath/$config.servicePath/$project.group")
 
 //                //TODO add command in M2
 //                if (!commandDirectory.exists()) {
@@ -124,7 +125,11 @@ class MicroGrailsPlugin implements Plugin<Project> {
                     serviceDirectory.mkdirs()
                 }
 
+                File urlMappings = new File("$config.rootPath/$config.controllerPath/$project.group/UrlMappings.groovy")
 
+                if(!urlMappings.exists()) {
+                    urlMappings.append("package $project.group")
+                }
             }
         }
 
@@ -135,7 +140,7 @@ class MicroGrailsPlugin implements Plugin<Project> {
             ConfigObject config = configSlurper.parse(conventions.toURI().toURL()).conventions
 
             //Add source setts based on conventions file.
-            project.rootProject.sourceSets {
+            project.sourceSets {
                 main {
                     groovy {
                         //TODO add command in M2
@@ -151,7 +156,6 @@ class MicroGrailsPlugin implements Plugin<Project> {
         //Adds Micro Grails library to the project
         project.dependencies {
             delegate.compile('com.virtualdogbert:micro-grails:1.0.M1')
-            //delegate.compile('com.virtualdogbert:GroovyConfigWriter:1.0')
         }
     }
 }
