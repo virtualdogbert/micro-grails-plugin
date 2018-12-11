@@ -1,5 +1,6 @@
 plugins {
-    id 'nu.studer.plugindev' version '1.0.6'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
     id 'groovy'
     id 'maven-publish'
     id "com.jfrog.bintray" version "1.8.4"
@@ -16,6 +17,13 @@ configurations {
 wrapper {
     gradleVersion = '4.10.2'
 }
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
 dependencies {
     compile gradleApi()
 }
@@ -123,30 +131,31 @@ bintray {
     pkg {
         repo = 'maven'
         name = 'micro-grails-plugin'
+        userOrg = getPropertyOrUseDefault("bintrayUser", "fake_user")
         desc = 'The Micro Grail plugin brings some of the convention over configuration Grails has to Micronaut projects.'
         licenses = ['Apache-2.0']
         labels = ['gradle', 'plugin', 'micronaut', 'grails', 'micro grails']
-        websiteUrl = ' https://github.com/virtualdogbert/migro-grails-plugin'
+        websiteUrl = 'https://github.com/virtualdogbert/migro-grails-plugin'
         issueTrackerUrl = 'https://github.com/virtualdogbert/micro-grails-plugin/issues'
         vcsUrl = 'https://github.com/virtualdogbert/micro-grails-plugin.git'
         publicDownloadNumbers = true
     }
 }
+gradlePlugin {
+    plugins {
+        microGrailsPlugin {
+            id = 'micro.grails.plugin'
+            displayName = 'Micro Grails Plugin'
+            description = 'The Micro Grail plugin brings some of the convention over configuration Grails has to Micronaut projects.'
+            implementationClass = 'com.virtualdogbert.MicroGrailsPlugin'
+        }
+    }
+}
 
-
-plugindev {
-    pluginId = 'micro.grails.plugin'
-    pluginImplementationClass 'com.virtualdogbert.MicroGrailsPlugin'
-    pluginDescription 'This project brings some of the convention over configuration Grails has to Micronaut projects.'
-    pluginLicenses 'Apache-2.0'
-    pluginTags 'gradle', 'plugin', 'micronaut', 'grails', 'console'
-    authorId 'virtualdogbert'
-    authorName 'Tucker Pelletier'
-    authorEmail 'virtualdogbert@gmail.com'
-    projectUrl 'https://virtualdogbert.github.io/micro-grails-plugin/'
-    projectIssuesUrl 'https://github.com/virtualdogbert/micro-grails-plugin/issues'
-    projectVcsUrl 'https://github.com/virtualdogbert/micro-grails-plugin.git'
-    projectInceptionYear '2018'
+pluginBundle {
+    website = 'https://github.com/virtualdogbert/migro-grails-plugin'
+    vcsUrl = 'https://github.com/virtualdogbert/micro-grails-plugin.git'
+    tags = ['gradle', 'plugin', 'micronaut', 'grails', 'micro grails']
 }
 
 dependencies {
