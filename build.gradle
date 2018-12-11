@@ -1,19 +1,138 @@
 plugins {
-    id 'nu.studer.plugindev' version '1.0.3'
+    id 'nu.studer.plugindev' version '1.0.6'
     id 'groovy'
-    id 'maven'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 group = 'com.virtualdogbert'
 version = '1.0.M1'
+description = 'The Micro Grail plugin brings some of the convention over configuration Grails has to Micronaut projects.'
 
 configurations {
     consolePlugin
 }
 
+wrapper {
+    gradleVersion = '4.7'
+}
 dependencies {
     compile gradleApi()
 }
+
+sourceSets {
+    main.groovy.srcDir 'src'
+    main.resources {
+        srcDirs = ['src/main/resources']
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier "sources"
+}
+
+ext {
+    theTitle = 'Micro Grails Plugin'
+    titleForDocumentation = archivesBaseName + ' ' + version
+    packageTitle = group
+    description = description
+}
+
+task jarDoc(type: Jar, dependsOn: [javadoc, groovydoc]) {
+    classifier = 'javadoc'
+    from docsDir
+}
+
+javadoc {
+    options.overview('overview.html')
+    options.showAll()
+    options.encoding('UTF-8')
+    options.setUse(true)
+    options.author(true)
+    options.version(true)
+    options.windowTitle("Micro Grails Plugin")
+    options.docTitle(titleForDocumentation)
+    doFirst {
+        javadoc.title = titleForDocumentation
+        javadoc.options.docTitle = javadoc.title
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc) {
+        // disable the crazy super-strict doclint tool in Java 8
+        //noinspection SpellCheckingInspection
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+groovydoc {
+    dependsOn(classes)
+    includePrivate = true
+    use = true
+    windowTitle = packageTitle
+    docTitle = packageTitle
+    header = packageTitle
+    include 'com/virtualdogbert/**'
+}
+
+
+
+publishing {
+    publications {
+        groovyMaven(MavenPublication) {
+            from components.java
+
+            artifact(sourceJar) {
+                classifier "sources"
+            }
+
+            artifact jarDoc {
+                classifier = 'javadoc'
+            }
+        }
+
+
+    }
+}
+
+task jarSrc(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives(jarSrc)
+    archives(jarDoc)
+}
+
+
+String getPropertyOrUseDefault(String propertyName, String defaultValue) {
+    hasProperty(propertyName) ? getProperty(propertyName) : defaultValue
+}
+
+bintray {
+    user = getPropertyOrUseDefault("bintrayUser", "fake_user")
+    key = getPropertyOrUseDefault("bintrayKey", "fake_key")
+    publications = ['groovyMaven']
+
+    def projectName = project.name
+    def projectDescription = project.description
+
+    pkg {
+        repo = 'maven'
+        name = 'micro-grails-plugin'
+        desc = 'The Micro Grail plugin brings some of the convention over configuration Grails has to Micronaut projects.'
+        licenses = ['Apache-2.0']
+        labels = ['gradle', 'plugin', 'micronaut', 'grails', 'micro grails']
+        websiteUrl = ' https://github.com/virtualdogbert/migro-grails-plugin'
+        issueTrackerUrl = 'https://github.com/virtualdogbert/micro-grails-plugin/issues'
+        vcsUrl = 'https://github.com/virtualdogbert/micro-grails-plugin.git'
+        publicDownloadNumbers = true
+    }
+}
+
 
 plugindev {
     pluginId = 'micro.grails.plugin'
@@ -28,13 +147,6 @@ plugindev {
     projectIssuesUrl 'https://github.com/virtualdogbert/micro-grails-plugin/issues'
     projectVcsUrl 'https://github.com/virtualdogbert/micro-grails-plugin.git'
     projectInceptionYear '2018'
-    done() // do not omit this
-}
-
-bintray {
-    user = System.getenv().get("BINTRAY_USER")
-    key = System.getenv().get("BINTRAY_API_KEY")
-    pkg.repo = 'maven'
 }
 
 dependencies {
@@ -42,11 +154,3 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.18'
 }
 
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('repo'))
-        }
-    }
-}

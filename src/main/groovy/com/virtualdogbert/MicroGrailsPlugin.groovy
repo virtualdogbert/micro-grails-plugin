@@ -12,7 +12,8 @@ import org.yaml.snakeyaml.Yaml
  */
 class MicroGrailsPlugin implements Plugin<Project> {
 
-    static final  String      conventionsFile = "conventions.groovy"
+    static final  String      conventionsFile = "conventions.groovy.template"
+    static final  String      conventionsOut  = "conventions.groovy"
     private final ClassLoader loader          = getClass().getClassLoader()
 
     void apply(Project project) {
@@ -92,8 +93,8 @@ class MicroGrailsPlugin implements Plugin<Project> {
             group = 'micro grails'
 
             doLast {
-                String conventionsIn = loader.getResourceAsStream('conventions.groovy').text
-                File conventionsOut = new File("$project.projectDir/$conventionsFile")
+                String conventionsIn = loader.getResourceAsStream(conventionsFile).text
+                File conventionsOut = new File("$project.projectDir/$conventionsOut")
 
                 if (!conventionsOut.exists()) {
                     conventionsOut.append(conventionsIn)
@@ -133,7 +134,7 @@ class MicroGrailsPlugin implements Plugin<Project> {
             }
         }
 
-        File conventions = new File(conventionsFile)
+        File conventions = new File(conventionsOut)
 
         if (conventions.exists()) {
             ConfigSlurper configSlurper = new ConfigSlurper()
